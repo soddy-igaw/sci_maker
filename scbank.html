@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SC제일은행 마케팅 전략 대시보드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral & Muted Green -->
+    <!-- Application Structure Plan: A single-page dashboard structure is chosen for its directness and suitability for strategic overviews. The user journey follows a logical marketing workflow: 1. Market Analysis (understanding the landscape with charts), 2. Insights (identifying opportunities/risks), 3. Audience & Strategy (linking specific targets to actionable plans via interactive cards). This top-down approach allows a marketer to quickly grasp the context and then drill down into actionable details, making it highly usable. Navigation is handled by a sticky header for easy access to each section. -->
+    <!-- Visualization & Content Choices: 
+        - Market Trend: Report asks for usage change. Goal is to show change. Line chart (Chart.js) is the best fit. Interaction: Hover tooltips.
+        - Brand Position: Report asks for a position map. Goal is to compare entities. Bubble chart (Chart.js) on two axes (Growth vs. Usage) is perfect. Interaction: Hover tooltips.
+        - Insights: Report lists opportunities/risks. Goal is to organize and inform. Styled HTML cards with icons (🎯, 🚨) offer quick, scannable information.
+        - Audience/Strategy: Report links audiences to strategies. Goal is to show this relationship. Interactive HTML cards with a click-to-reveal interaction directly connect the 'who' with the 'what', making the strategy clear and actionable.
+        - Execution Flow: Report asks for a flow map. Goal is to show a process. A diagram built with HTML/CSS (Flexbox) is clean, lightweight, and effective.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 350px; max-height: 45vh; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .nav-link { transition: color 0.3s, border-bottom-color 0.3s; }
+        .nav-link.active { color: #10B981; border-bottom-color: #10B981; }
+        .audience-card { transition: transform 0.3s, box-shadow 0.3s; }
+        .audience-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .details-panel { transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out; max-height: 0; opacity: 0; overflow: hidden; }
+        .details-panel.open { max-height: 500px; opacity: 1; }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-emerald-600">SC 제일은행</span>
+                    <span class="ml-3 text-lg font-light text-stone-600">마케팅 전략 대시보드</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#market-analysis" class="nav-link text-stone-600 hover:text-emerald-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">시장 분석</a>
+                        <a href="#insights" class="nav-link text-stone-600 hover:text-emerald-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">인사이트 보드</a>
+                        <a href="#audience" class="nav-link text-stone-600 hover:text-emerald-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">타겟 오디언스</a>
+                        <a href="#flow" class="nav-link text-stone-600 hover:text-emerald-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">실행 플로우</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <section id="market-analysis" class="py-12 md:py-16 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-stone-800">1. 브랜드 기본 분석</h2>
+                <p class="mt-4 text-lg text-stone-600 max-w-3xl mx-auto">현재 SC제일은행이 시장에서 어떤 위치에 있는지, 그리고 시장의 전반적인 흐름은 어떠한지 데이터 기반으로 파악합니다. 차트를 통해 경쟁사와의 관계 및 시장 트렌드를 직관적으로 이해할 수 있습니다.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-start">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-semibold mb-4 text-center">금융 > 은행 카테고리 주간 사용량</h3>
+                    <div class="chart-container">
+                        <canvas id="marketTrendChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-semibold mb-4 text-center">SC제일은행 포지션 맵</h3>
+                     <div class="chart-container">
+                        <canvas id="positionMapChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12">
+                 <h3 class="text-2xl font-bold text-center mb-8">차별화 포인트</h3>
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                        <div class="text-3xl mb-3">💱</div>
+                        <h4 class="font-semibold text-lg">외환 특화 서비스</h4>
+                        <p class="text-stone-600 mt-2 text-sm">타 은행 대비 경쟁력 있는 환율과 간편한 해외 송금 프로세스로 글로벌 고객층에 어필합니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                        <div class="text-3xl mb-3">📈</div>
+                        <h4 class="font-semibold text-lg">경쟁력 있는 상품 금리</h4>
+                        <p class="text-stone-600 mt-2 text-sm">특정 예·적금 상품에서 높은 금리를 제공하여 금리에 민감한 고객들에게 매력적입니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                        <div class="text-3xl mb-3">📱</div>
+                        <h4 class="font-semibold text-lg">직관적인 UI/UX</h4>
+                        <p class="text-stone-600 mt-2 text-sm">핵심 기능에 빠르게 접근할 수 있는 간결한 앱 디자인으로 디지털에 익숙한 젊은 층의 만족도가 높습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-stone-200">
+
+        <section id="insights" class="py-12 md:py-16 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-stone-800">2. 브랜드 인사이트 보드</h2>
+                <p class="mt-4 text-lg text-stone-600 max-w-3xl mx-auto">데이터 분석을 통해 발견한 SC제일은행의 기회 요인과 위험 요소를 정리했습니다. 이 인사이트는 마케팅 캠페인의 방향성을 결정하는 중요한 기준이 됩니다.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-emerald-500">
+                    <h3 class="text-2xl font-bold flex items-center"><span class="text-3xl mr-3">🎯</span> 기회 (Opportunities)</h3>
+                    <ul class="mt-6 space-y-4 text-stone-700">
+                        <li class="flex items-start"><span class="text-emerald-500 font-bold mr-2 mt-1">✓</span><span><strong>신규 금융상품 출시:</strong> 새로운 투자 상품이나 예금 상품 론칭 시, 초기 가입자 확보를 위한 대규모 캠페인 기회.</span></li>
+                        <li class="flex items-start"><span class="text-emerald-500 font-bold mr-2 mt-1">✓</span><span><strong>시즌별 금융 니즈:</strong> 연말정산, 휴가철 환전 등 특정 시기에 발생하는 고객 니즈를 타겟팅한 프로모션 전개.</span></li>
+                        <li class="flex items-start"><span class="text-emerald-500 font-bold mr-2 mt-1">✓</span><span><strong>경쟁사 약세 영역 공략:</strong> 외환 송금, 비대면 주택담보대출 등 경쟁사가 상대적으로 취약한 분야에서 차별화된 메시지로 시장 점유율 확대.</span></li>
+                    </ul>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-red-500">
+                    <h3 class="text-2xl font-bold flex items-center"><span class="text-3xl mr-3">🚨</span> 위험 (Risks)</h3>
+                    <ul class="mt-6 space-y-4 text-stone-700">
+                        <li class="flex items-start"><span class="text-red-500 font-bold mr-2 mt-1">✓</span><span><strong>경쟁사 공세 강화:</strong> 주요 경쟁 은행의 파격적인 금리 인하, 대규모 광고 캠페인으로 인한 고객 이탈 가능성.</span></li>
+                        <li class="flex items-start"><span class="text-red-500 font-bold mr-2 mt-1">✓</span><span><strong>시장 환경 변화:</strong> 금융 당국의 규제 강화나 경기 둔화로 인한 대출 시장 위축 및 투자 심리 악화.</span></li>
+                        <li class="flex items-start"><span class="text-red-500 font-bold mr-2 mt-1">✓</span><span><strong>자사 앱 리텐션 하락:</strong> 특정 서비스(예: 이체)만 사용하고 이탈하는 유저 그룹의 리텐션을 높일 방안 부재.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-stone-200">
+
+        <section id="audience" class="py-12 md:py-16 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-stone-800">3. 추천 오디언스 및 실행 전략</h2>
+                <p class="mt-4 text-lg text-stone-600 max-w-3xl mx-auto">데이터 분석을 통해 도출한 핵심 타겟 그룹입니다. 각 카드를 클릭하여 해당 오디언스의 특징과 그들을 공략하기 위한 맞춤형 실행 전략을 확인해 보세요.</p>
+            </div>
+            <div class="space-y-6">
+                <div class="audience-card bg-white rounded-lg shadow-md overflow-hidden cursor-pointer" data-audience="1">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-emerald-700">🔎 신규 탐색층</h3>
+                        <p class="mt-2 text-stone-600">최근 1~2주 내 금융>은행 앱을 처음 사용하거나 사용량이 급증한 잠재 고객</p>
+                    </div>
+                    <div class="details-panel bg-stone-50 px-6 py-4 border-t border-stone-200" id="details-1">
+                        <h4 class="font-semibold text-lg mb-2">실행 전략 제안</h4>
+                        <p><strong>- 메시지:</strong> "SC제일은행과의 첫 만남, 풍성한 혜택으로 시작하세요!"</p>
+                        <p><strong>- 전략:</strong> 온보딩 프로세스를 간소화하고, 첫 거래(계좌 개설, 체크카드 발급 등) 시 즉각적인 리워드(쿠폰, 포인트)를 제공하여 긍정적인 첫인상을 형성합니다.</p>
+                        <p><strong>- 채널:</strong> 검색 광고, 소셜 미디어 광고, 앱 마켓 광고</p>
+                    </div>
+                </div>
+
+                <div class="audience-card bg-white rounded-lg shadow-md overflow-hidden cursor-pointer" data-audience="2">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-emerald-700">🔄 다중 은행 사용자</h3>
+                        <p class="mt-2 text-stone-600">SC제일은행과 경쟁사 앱(KB, 신한 등)을 함께 사용하는 금리/혜택 민감층</p>
+                    </div>
+                    <div class="details-panel bg-stone-50 px-6 py-4 border-t border-stone-200" id="details-2">
+                        <h4 class="font-semibold text-lg mb-2">실행 전략 제안</h4>
+                        <p><strong>- 메시지:</strong> "아직도 비교하세요? SC제일은행의 압도적인 금리/수수료 혜택을 확인하세요."</p>
+                        <p><strong>- 전략:</strong> 경쟁사 대비 우위에 있는 특정 상품(외화 통장, 특정 적금)의 소구점을 명확히 하여 메시지를 전달하고, 주거래 은행으로 전환 시 추가적인 혜택을 제공하여 Lock-in을 유도합니다.</p>
+                        <p><strong>- 채널:</strong> 리타겟팅 광고, 금융 전문 커뮤니티, 콘텐츠 마케팅</p>
+                    </div>
+                </div>
+
+                <div class="audience-card bg-white rounded-lg shadow-md overflow-hidden cursor-pointer" data-audience="3">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-emerald-700">☀️ 재활성화 가능층</h3>
+                        <p class="mt-2 text-stone-600">2~3개월간 미사용하다가 최근 다시 앱에 접속한 휴면 고객</p>
+                    </div>
+                    <div class="details-panel bg-stone-50 px-6 py-4 border-t border-stone-200" id="details-3">
+                        <h4 class="font-semibold text-lg mb-2">실행 전략 제안</h4>
+                        <p><strong>- 메시지:</strong> "돌아오신 것을 환영합니다! 고객님만을 위한 특별한 혜택이 기다리고 있어요."</p>
+                        <p><strong>- 전략:</strong> 복귀 고객 전용 우대 금리 쿠폰이나 수수료 면제 혜택을 제공하여 재이용을 촉진합니다. 간편한 자동이체 재설정, 쉬운 재로그인 등 편의성을 강조합니다.</p>
+                        <p><strong>- 채널:</strong> 인앱 메시지, 푸시 알림, 이메일/SMS 마케팅</p>
+                    </div>
+                </div>
+
+                <div class="audience-card bg-white rounded-lg shadow-md overflow-hidden cursor-pointer" data-audience="4">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-emerald-700">💎 고액 금융 서비스 관심층</h3>
+                        <p class="mt-2 text-stone-600">고액 이체, 투자, 외환 거래 앱 사용 경험이 있는 VVIP 잠재 고객</p>
+                    </div>
+                    <div class="details-panel bg-stone-50 px-6 py-4 border-t border-stone-200" id="details-4">
+                        <h4 class="font-semibold text-lg mb-2">실행 전략 제안</h4>
+                        <p><strong>- 메시지:</strong> "성공적인 자산관리를 위한 프리미엄 뱅킹, SC제일은행과 함께하세요."</p>
+                        <p><strong>- 전략:</strong> 프리미엄 금융 상품, 자산관리(WM) 서비스, 비대면 VIP 상담 서비스를 제안하여 상위 고객으로의 전환을 유도합니다. 맞춤형 포트폴리오 제안으로 전문성을 강조합니다.</p>
+                        <p><strong>- 채널:</strong> 타겟 광고(금융/경제 뉴스 매체), PB 연계 마케팅, 오프라인 세미나</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 border-stone-200">
+
+        <section id="flow" class="py-12 md:py-16 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-stone-800">4. 최종 실행 플로우</h2>
+                <p class="mt-4 text-lg text-stone-600 max-w-3xl mx-auto">정의된 오디언스를 대상으로 어떤 메시지를 어떤 채널을 통해 전달하고, 최종적으로 어떤 성과를 측정해야 하는지 한눈에 볼 수 있는 실행 계획입니다.</p>
+            </div>
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4 text-center">
+                    <div class="flex-1 p-4 bg-emerald-50 rounded-lg">
+                        <h4 class="font-bold text-lg text-emerald-800">오디언스</h4>
+                        <p class="text-sm text-emerald-700">Audience</p>
+                    </div>
+                    <div class="text-2xl font-thin text-stone-400">→</div>
+                    <div class="flex-1 p-4 bg-sky-50 rounded-lg">
+                        <h4 class="font-bold text-lg text-sky-800">메시지</h4>
+                        <p class="text-sm text-sky-700">Message</p>
+                    </div>
+                    <div class="text-2xl font-thin text-stone-400">→</div>
+                    <div class="flex-1 p-4 bg-amber-50 rounded-lg">
+                        <h4 class="font-bold text-lg text-amber-800">채널</h4>
+                        <p class="text-sm text-amber-700">Channel</p>
+                    </div>
+                    <div class="text-2xl font-thin text-stone-400">→</div>
+                    <div class="flex-1 p-4 bg-rose-50 rounded-lg">
+                        <h4 class="font-bold text-lg text-rose-800">핵심 성과 지표</h4>
+                        <p class="text-sm text-rose-700">KPI</p>
+                    </div>
+                </div>
+                <div class="mt-6 text-center text-stone-600">
+                    <p>이 플로우를 기반으로 각 캠페인의 성과를 측정하고, 지속적으로 전략을 최적화합니다.</p>
+                    <p class="mt-2 font-semibold">주요 KPI: 신규 가입자 수(CAC), 전환율(CVR), 고객 생애 가치(LTV), 재방문율(Retention)</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-stone-800 text-white mt-16">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm text-stone-400">
+            <p>&copy; 2025 SC Bank Marketing Strategy Dashboard. All Rights Reserved.</p>
+            <p class="mt-1">본 자료는 마케팅 전략 수립을 위한 내부 참고용입니다.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctxTrend = document.getElementById('marketTrendChart').getContext('2d');
+            new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: ['1주차', '2주차', '3주차', '4주차', '5주차', '6주차', '7주차', '8주차'],
+                    datasets: [{
+                        label: 'SC제일은행',
+                        data: [120, 130, 125, 140, 155, 150, 160, 175],
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: '경쟁사 A',
+                        data: [180, 185, 190, 180, 175, 180, 185, 180],
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: '카테고리 평균',
+                        data: [150, 155, 152, 160, 165, 162, 170, 175],
+                        borderColor: '#F59E0B',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderDash: [5, 5]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: false, grid: { color: '#e5e7eb' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            const ctxPosition = document.getElementById('positionMapChart').getContext('2d');
+            new Chart(ctxPosition, {
+                type: 'bubble',
+                data: {
+                    datasets: [
+                        { label: 'SC제일은행', data: [{x: 7.5, y: 70, r: 15}], backgroundColor: 'rgba(16, 185, 129, 0.7)' },
+                        { label: 'KB국민은행', data: [{x: 5, y: 95, r: 25}], backgroundColor: 'rgba(245, 158, 11, 0.7)' },
+                        { label: '신한은행', data: [{x: 6, y: 90, r: 22}], backgroundColor: 'rgba(59, 130, 246, 0.7)' },
+                        { label: '카카오뱅크', data: [{x: 9, y: 85, r: 28}], backgroundColor: 'rgba(253, 224, 71, 0.8)' },
+                        { label: '토스뱅크', data: [{x: 12, y: 75, r: 24}], backgroundColor: 'rgba(14, 165, 233, 0.7)' },
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    label += `(신규증가율: ${context.parsed.x}%, 총사용량: ${context.parsed.y})`;
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: { display: true, text: '총 사용량 (AU)' },
+                            grid: { color: '#e5e7eb' }
+                        },
+                        x: {
+                            title: { display: true, text: '신규 유저 증가율 (%)' },
+                            grid: { color: '#e5e7eb' }
+                        }
+                    }
+                }
+            });
+
+            const audienceCards = document.querySelectorAll('.audience-card');
+            audienceCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const audienceId = card.dataset.audience;
+                    const detailsPanel = document.getElementById(`details-${audienceId}`);
+                    
+                    const wasOpen = detailsPanel.classList.contains('open');
+
+                    document.querySelectorAll('.details-panel.open').forEach(openPanel => {
+                        openPanel.classList.remove('open');
+                    });
+                    
+                    if (!wasOpen) {
+                        detailsPanel.classList.add('open');
+                    }
+                });
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
