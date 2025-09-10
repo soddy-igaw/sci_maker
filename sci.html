@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>글램팜 오디언스 종합 보고서</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral (Cream, Soft Terracotta, Dark Slate) -->
+    <!-- Application Structure Plan: The SPA is redesigned as a comprehensive, single-page report for at-a-glance review. It maintains the high-level 'Executive Summary' and 'Market Landscape' sections for context. The core of the report is a new 'Comprehensive Audience Overview' section, which replaces the interactive navigation. This section presents all 8 audience groups simultaneously in a multi-column grid layout. This flat, non-interactive structure is ideal for quick comparison and direct presentation, allowing the user to view all strategic options without clicking or navigating. -->
+    <!-- Visualization & Content Choices: 1. [Executive Summary] Info: Key DMP & Web findings. Goal: Synthesize & Provide Context. Viz: Two distinct text blocks with bullet points. Interaction: Passive reading. Justification: Provides a high-level overview. 2. [Market Comparison] Info: Glampalm vs. JMW stats. Goal: Compare. Viz: Grouped Bar Chart (Chart.js/Canvas). Interaction: Tooltips. Justification: Instantly highlights competitive gaps. 3. [All Audiences] Info: Full data for all 8 audiences. Goal: Inform & Present. Viz: A grid of 8 identical, static cards (HTML/Tailwind). Interaction: None, all information is visible. Justification: This structure allows the audience to see every strategic group at once, facilitating direct comparison and review, which is a key requirement for a report. All choices support this comprehensive view and avoid static data dumps, and NO SVG/Mermaid are used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #FDFBF8; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 350px; max-height: 40vh; }
+        .gradient-text { background: linear-gradient(to right, #833ab4, #fd1d1d, #fcb045); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-10 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">글램팜 오디언스 종합 보고서</h1>
+            <p class="mt-1 text-sm sm:text-base text-slate-600">데이터 기반 오디언스 분석 및 전략 제안</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+
+        <section id="executive-summary" class="mb-16">
+            <h2 class="text-2xl font-bold mb-2">Executive Summary: 핵심 요약</h2>
+            <p class="text-slate-600 mb-6 max-w-3xl">내부 데이터와 외부 시장 트렌드를 종합 분석하여 글램팜의 현재 상황과 오디언스 전략의 핵심 포인트를 도출했습니다.  </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-lg mb-3 text-sky-700">DMP 데이터 기반 인사이트</h3>
+                    <ul class="space-y-3 text-sm text-slate-700">
+                        <li class="flex items-start">
+                            <span class="text-sky-500 mr-2 mt-1">✓</span>
+                            <div><strong class="font-semibold text-slate-800">VIP 이탈 방어:</strong> 글램팜 VIP가 경쟁사 JMW와 보다나를 교차 구매하는 경향이 있어, 이탈 방어를 위한 적극적인 관리가 필요합니다.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-sky-500 mr-2 mt-1">✓</span>
+                            <div><strong class="font-semibold text-slate-800">가격 경쟁력:</strong> JMW 대비 3.5배 낮은 평균 단가를 활용해 합리적 프리미엄 시장을 공략할 수 있습니다.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-sky-500 mr-2 mt-1">✓</span>
+                            <div><strong class="font-semibold text-slate-800">성장 잠재력:</strong> JMW 제품을 탐색하는 고객 중 글램팜 제품을 장바구니에 담은 그룹이 존재, 경쟁사 고객을 유입시킬 기회가 있습니다.</div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-lg mb-3 text-emerald-700">외부 웹 데이터 트렌드</h3>
+                    <ul class="space-y-3 text-sm text-slate-700">
+                        <li class="flex items-start">
+                            <span class="text-emerald-500 mr-2 mt-1">✓</span>
+                            <div><strong class="font-semibold text-slate-800">브랜드 충성도:</strong> '브랜드 고객충성도 대상' 4년 연속 1위로 하이엔드 시장에서의 독보적 위치를 증명했습니다.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-emerald-500 mr-2 mt-1">✓</span>
+                            <div><strong class="font-semibold text-slate-800">전문성:</strong> 국내 미용실 고데기 시장의 95% 이상을 점유하며 전문가에게 인정받는 기술력을 보유했습니다.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-emerald-500 mr-2 mt-1">✓</span>
+                            <div><strong class="font-semibold text-slate-800">글로벌 확장:</strong> 쿠팡 베스트셀러 등극과 함께 해외 시장 진출에 적극적으로 나서고 있습니다.</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="market-landscape" class="mb-16">
+            <h2 class="text-2xl font-bold mb-2">Market Landscape: 시장 현황 및 주요 지표</h2>
+            <p class="text-slate-600 mb-6 max-w-3xl">주요 경쟁사 JMW와의 비교를 통해 글램팜의 현재 위치를 진단합니다.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-lg mb-4">Glampalm vs. JMW 핵심 지표 비교</h3>
+                    <div class="chart-container">
+                        <canvas id="competitorChart"></canvas>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-full flex flex-col justify-center">
+                        <h3 class="font-bold text-lg mb-3">Key Insights 요약</h3>
+                        <ul class="space-y-3 text-sm text-slate-700">
+                            <li class="flex items-start">
+                                <span class="text-amber-600 mr-2 mt-1">▶</span>
+                                <div><strong class="font-semibold text-slate-800">[VIP 교차구매]</strong> 글램팜 VIP 고객의 10.3%가 '보다나', 8.8%가 'JMW' 제품을 함께 구매하며 이탈 가능성을 보입니다.</div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-amber-600 mr-2 mt-1">▶</span>
+                                <div><strong class="font-semibold text-slate-800">[가격 경쟁력]</strong> 글램팜의 평균단가(5.3만원)는 JMW(18.5만원) 대비 3배 이상 낮아, 합리적 프리미엄 시장에서 강력한 소구점을 가집니다.</div>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-amber-600 mr-2 mt-1">▶</span>
+                                <div><strong class="font-semibold text-slate-800">[회수 기회]</strong> JMW 뷰어의 글램팜 카트 비율이 7.1%로, 적극적인 경쟁사 고객 유입 기회가 존재합니다.</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="all-audiences">
+            <h2 class="text-2xl font-bold mb-6">Comprehensive Audience Overview</h2>
+            <div id="audience-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-100 border-t mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-xs text-slate-500">
+            <p>&copy; 2025 Glampalm Audience Strategy Proposal. All data is illustrative.</p>
+        </div>
+    </footer>
+
+<script>
+const audienceData = [
+    {
+        priority_rank: 1,
+        타겟: "참조 브랜드에 흔들린, 글램팜 VIP 이탈 고객",
+        태그: ["#글램팜VIP", "#JMW", "#이탈고객", "#고객이탈방지"],
+        설명: [
+            "최근 3개월 JMW 구매 상위 고객 중 글램팜 VIP 이탈 고객입니다.",
+            "JMW 구매 상위 퍼센타일을 기준으로 글램팜 VIP 이탈 고객을 선별합니다."
+        ],
+        evidence: {
+            insight_evidence: "[VIP-방어] 글램팜 VIP의 교차구매 상위: JMW 8.8%, 보다나 10.3% — VIP 이탈 관리 필요.",
+            context_not: "내부 인사이트의 VIP 이탈 분석과 3개월 JMW 구매 데이터를 결합하여 타겟팅"
+        }
+    },
+    {
+        priority_rank: 2,
+        타겟: "헤어 스타일링에 진심인, 고데기 애용 고객",
+        태그: ["#고데기", "#헤어스타일링", "#생활가전", "#헤어기기"],
+        설명: [
+            "최근 3개월 동안 '생활가전>헤어기기,두피관리기>고데기' 카테고리에서 결제 금액 상위 20% 고객입니다.",
+            "해당 카테고리 내 구매액 기준 상위 20% 고객을 선별합니다."
+        ],
+        evidence: {
+            insight_evidence: "카테고리 내 최상위 지출 고객 그룹",
+            context_not: "selection_context의 primary_category를 사용하여 최근 3개월 고데기 카테고리 구매 상위 20% 고객을 선별"
+        }
+    },
+    {
+        priority_rank: 3,
+        타겟: "가성비를 중시하는, 글램팜 잠재 고객",
+        태그: ["#가성비", "#글램팜", "#잠재고객", "#합리적소비"],
+        설명: [
+            "글램팜 평균 구매 단가 대비 낮은 금액대 제품을 구매한 고객입니다.",
+            "JMW 대비 글램팜의 낮은 평균 구매 단가를 고려하여, 가성비를 중시하는 고객을 타겟팅합니다."
+        ],
+        evidence: {
+            insight_evidence: "[비교] JMW vs 글램팜 — 평균단가 185,421원 vs 53,247원(3.48x).",
+            context_not: "내부 인사이트의 가격 비교 데이터를 활용하여 가성비를 중시하는 고객을 타겟팅"
+        }
+    },
+    {
+        priority_rank: 4,
+        타겟: "모발 손상 방지에 관심있는, 섬세한 스타일링 추구 고객",
+        태그: ["#모발손상방지", "#헤어케어", "#스타일링", "#뷰티"],
+        설명: [
+            "모발 손상 방지 기능에 대한 관심이 높고, 세련된 스타일링을 추구하는 고객입니다.",
+            "웹 인사이트의 '모발 손상 방지' 키워드와 글램팜의 브랜드 특징을 결합하여 타겟팅합니다."
+        ],
+        evidence: {
+            insight_evidence: "[웹인사이트] '모발 손상 최소화'는 글램팜의 핵심 브랜드 포지션",
+            context_not: "웹 인사이트의 '모발 손상 방지' 키워드와 고객의 구매 및 앱 사용 패턴을 결합하여 타겟팅"
+        }
+    },
+    {
+        priority_rank: 5,
+        타겟: "피드가 달아오른, 신상 소문 따라 움직이는 탐험러",
+        태그: ["#앱사용급증", "#뷰티앱", "#신상품", "#트렌드"],
+        설명: [
+            "최근 7일 동안 뷰티/헤어 관련 앱 사용량이 급증한 고객입니다.",
+            "최근 7일 대비 직전 7일 앱 사용량 증가율이 높은 고객을 선별합니다."
+        ],
+        evidence: {
+            insight_evidence: "앱 사용량 급증은 특정 카테고리에 대한 관심도 증가의 강력한 신호",
+            context_not: "앱 사용량 증가 추세를 활용하여 뷰티/헤어 관련 앱 사용량이 급증한 고객을 선별"
+        }
+    },
+    {
+        priority_rank: 6,
+        타겟: "구매를 고민하는, 똑똑한 쇼핑 헌터",
+        태그: ["#구매임박", "#고데기", "#헤어기기", "#쇼핑"],
+        설명: [
+            "최근 7일 동안 고데기 카테고리 상품을 본 후 장바구니에 담았지만 구매하지 않은 고객입니다."
+        ],
+        evidence: {
+            insight_evidence: "높은 구매의도를 보였으나 최종 전환되지 않은 그룹",
+            context_not: "최근 7일 동안 고데기 카테고리 상품을 본 후 장바구니에 담았지만 구매하지 않은 고객을 선별"
+        }
+    },
+    {
+        priority_rank: 7,
+        타겟: "프리미엄 헤어케어에 투자하는, 럭셔리 스타일 연출가",
+        태그: ["#프리미엄", "#고가제품", "#헤어케어", "#뷰티"],
+        설명: [
+            "고가의 헤어 제품을 구매한 경험이 있으며, 뷰티/헤어 관련 앱을 자주 사용하는 고객입니다.",
+            "고가의 헤어 제품 구매 이력과 뷰티/헤어 관련 앱 사용 시간을 기준으로 선별합니다."
+        ],
+        evidence: {
+            insight_evidence: "고가 제품 구매력과 높은 앱 관여도를 결합하여 업셀링(up-selling) 타겟 발굴",
+            context_not: "고가 헤어 제품 구매 이력과 뷰티/헤어 관련 앱 사용 시간을 결합하여 프리미엄 헤어케어에 관심 있는 고객을 선별"
+        }
+    },
+    {
+        priority_rank: 8,
+        타겟: "글램팜에 익숙한, 충성도 높은 헤어 스타일링 마니아",
+        태그: ["#글램팜", "#헤어스타일링", "#충성고객", "#재구매"],
+        설명: [
+            "글램팜 제품을 반복 구매한 고객입니다.",
+            "글램팜 제품의 재구매율이 높은 고객을 선별합니다."
+        ],
+        evidence: {
+            insight_evidence: "[포지셔닝] 글램팜=Loyal but Quiet",
+            context_not: "글램팜 제품의 재구매 이력을 기반으로 충성도 높은 고객을 선별"
+        }
+    }
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+    const competitorCtx = document.getElementById('competitorChart').getContext('2d');
+    new Chart(competitorCtx, {
+        type: 'bar',
+        data: {
+            labels: ['점유율(%)', '전환율(%)', '평균단가(원)'],
+            datasets: [
+                {
+                    label: '글램팜',
+                    data: [25.3, 6.3, 53247],
+                    backgroundColor: 'rgba(217, 119, 6, 0.7)',
+                    borderColor: 'rgba(217, 119, 6, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'JMW',
+                    data: [30.3, 8.2, 185421],
+                    backgroundColor: 'rgba(75, 85, 99, 0.7)',
+                    borderColor: 'rgba(75, 85, 99, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value, index, values) {
+                           if (value >= 1000) {
+                                return value.toLocaleString('ko-KR') + '원';
+                           }
+                           return value + '%';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                if (context.label === '평균단가(원)') {
+                                    label += new Intl.NumberFormat('ko-KR').format(context.parsed.y) + '원';
+                                } else {
+                                     label += context.parsed.y + '%';
+                                }
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    const gridContainer = document.getElementById('audience-cards-grid');
+    
+    audienceData.sort((a,b) => a.priority_rank - b.priority_rank).forEach(audience => {
+        let tagsHtml = audience.태그.map(tag => `<span class="inline-block bg-slate-100 text-slate-600 text-xs font-medium mr-2 mb-2 px-2.5 py-1 rounded-full">${tag}</span>`).join('');
+        let descriptionHtml = audience.설명.map(desc => `<li class="flex items-start"><svg class="w-4 h-4 text-amber-500 mr-2 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>${desc}</span></li>`).join('');
+
+        const card = document.createElement('div');
+        card.className = 'bg-white p-6 rounded-2xl shadow-sm border border-slate-200';
+        card.innerHTML = `
+            <span class="text-sm font-bold text-amber-700">Rank ${audience.priority_rank}</span>
+            <h3 class="text-lg font-bold my-2 text-slate-900">${audience.타겟}</h3>
+            <div class="mb-4">${tagsHtml}</div>
+            <h4 class="font-semibold mb-2 text-slate-800">주요 특징</h4>
+            <ul class="space-y-2 text-sm text-slate-600 mb-4">
+                ${descriptionHtml}
+            </ul>
+            <div class="bg-slate-50 p-4 rounded-lg border">
+                <h4 class="font-semibold mb-2 text-slate-800">데이터 근거</h4>
+                <p class="text-sm text-slate-600"><strong class="font-medium text-slate-700">[인사이트]</strong> ${audience.evidence.insight_evidence}</p>
+                <p class="text-sm text-slate-600 mt-2"><strong class="font-medium text-slate-700">[타겟팅 노트]</strong> ${audience.evidence.context_not}</p>
+            </div>
+        `;
+        gridContainer.appendChild(card);
+    });
+});
+</script>
+</body>
+</html>
